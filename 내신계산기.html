@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>내신 등급 계산기</title>
+
+<style>
+@font-face {
+    font-family: 'PFStardust';
+    src: url('PFStardust.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 40px 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    font-family: 'PFStardust', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #ffffff;
+    background: #000000;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("https://i.pinimg.com/736x/0f/f3/9a/0ff39aa45aaa35b86e13d94a69c8da55.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: grayscale(100%) brightness(0.8);
+    z-index: -2;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at top, rgba(255,255,255,0.10), transparent 55%),
+                radial-gradient(circle at bottom, rgba(255,255,255,0.08), transparent 55%),
+                rgba(0,0,0,0.4);
+    z-index: -1;
+}
+
+h1 {
+    font-size: 32px;
+    letter-spacing: 2px;
+    margin: 0 0 32px 0;
+    text-align: center;
+    color: #ffffff;
+    text-shadow:
+        0 0 4px #ffffff,
+        0 0 8px #d9d9d9,
+        0 0 12px #bfbfbf,
+        0 0 20px #a6a6a6,
+        0 0 30px #8c8c8c;
+}
+
+.main-card {
+    width: 100%;
+    max-width: 780px;
+    background: rgba(10,10,10,0.9);
+    border-radius: 18px;
+    border: 1px solid #444;
+    box-shadow:
+        0 0 18px rgba(0,0,0,0.8),
+        0 0 30px rgba(0,0,0,0.9);
+    padding: 24px 24px 30px 24px;
+    backdrop-filter: blur(4px);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #111111;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #444444;
+    color: #ffffff;
+}
+
+thead {
+    background: #1f1f1f;
+}
+
+th, td {
+    padding: 12px 10px;
+    text-align: center;
+    font-size: 14px;
+}
+
+th {
+    font-weight: 600;
+    border-bottom: 1px solid #444444;
+}
+
+tbody tr:nth-child(odd) {
+    background: #151515;
+}
+
+tbody tr:nth-child(even) {
+    background: #101010;
+}
+
+tbody tr:hover {
+    background: #222222;
+}
+
+input {
+    width: 90%;
+    padding: 8px 6px;
+    border-radius: 6px;
+    border: 1px solid #555555;
+    background: #1e1e1e;
+    color: #ffffff;
+    font-family: 'PFStardust', system-ui, sans-serif;
+    font-size: 14px;
+    text-align: center;
+    outline: none;
+}
+
+input[lang="ko"] {
+    ime-mode: active;
+}
+
+input:focus {
+    border-color: #ffffff;
+    box-shadow: 0 0 6px rgba(255,255,255,0.6);
+}
+
+.button-row {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+button {
+    min-width: 110px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: 1px solid #666666;
+    background: #262626;
+    color: #ffffff;
+    font-family: 'PFStardust', system-ui, sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+button:hover {
+    background: #3a3a3a;
+    border-color: #aaaaaa;
+    box-shadow: 0 0 10px rgba(255,255,255,0.3);
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+#resultWrapper {
+    margin-top: 24px;
+    display: flex;
+    justify-content: center;
+}
+
+#resultBox {
+    display: none;
+    position: relative;
+    width: 320px;
+    min-height: 110px;
+    border-radius: 12px;
+    padding: 22px 16px;
+    background: radial-gradient(circle at 50% 50%, #191919 0%, #050505 60%, #000000 100%);
+    border: 2px solid #ffffff;
+    color: #ffffff;
+    text-align: center;
+    overflow: visible;
+    animation: popIn 0.4s ease-out;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#resultBox::before {
+    content: "";
+    position: absolute;
+    inset: -20px;
+    background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.18), transparent 55%);
+    z-index: -2;
+    filter: blur(2px);
+    border-radius: 12px;
+}
+
+#resultBox::after {
+    content: "";
+    position: absolute;
+    inset: -20px;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.25), transparent 60%);
+    clip-path: polygon(
+        50% 0%,
+        60% 10%,
+        75% 5%,
+        85% 18%,
+        100% 15%,
+        92% 32%,
+        100% 50%,
+        92% 68%,
+        100% 85%,
+        85% 82%,
+        75% 95%,
+        60% 90%,
+        50% 100%,
+        40% 90%,
+        25% 95%,
+        15% 82%,
+        0% 85%,
+        8% 68%,
+        0% 50%,
+        8% 32%,
+        0% 15%,
+        15% 18%,
+        25% 5%,
+        40% 10%
+    );
+    opacity: 0.95;
+    filter: blur(1px);
+    z-index: -1;
+    animation: burstGlow 2.2s ease-in-out infinite alternate;
+}
+
+.result-label {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 6px;
+}
+
+.result-value {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-shadow:
+        0 0 4px #ffffff,
+        0 0 10px #ffffff,
+        0 0 18px #ffffff;
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.4); opacity: 0; }
+    60% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes burstGlow {
+    0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 0.9;
+    }
+    50% {
+        transform: scale(1.05) rotate(3deg);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.1) rotate(-3deg);
+        opacity: 0.9;
+    }
+}
+
+@media (max-width: 840px) {
+    .main-card {
+        padding: 18px 14px 24px 14px;
+    }
+    table {
+        font-size: 12px;
+    }
+    th, td {
+        padding: 10px 4px;
+    }
+    #resultBox {
+        width: 280px;
+        padding: 18px 14px;
+    }
+    .result-value {
+        font-size: 24px;
+    }
+}
+</style>
+</head>
+<body>
+
+<h1>내신 등급 계산기</h1>
+
+<div class="main-card">
+    <table id="gradeTable">
+        <thead>
+            <tr>
+                <th>과목</th>
+                <th>시수</th>
+                <th>등급</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" lang="ko"></td>
+                <td><input type="number" step="1" min="0"></td>
+                <td><input type="number" step="0.01" min="0"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="button-row">
+        <button type="button" id="addRowBtn" onclick="addRow()">행 추가</button>
+        <button type="button" id="calcBtn" onclick="calculate()">평균 계산</button>
+    </div>
+
+    <div id="resultWrapper">
+        <div id="resultBox">
+            <div class="result-label">최종 평균 등급</div>
+            <div class="result-value">0.000</div>
+        </div>
+    </div>
+</div>
+
+<script>
+function addRow() {
+    const tableBody = document.querySelector("#gradeTable tbody");
+    const newRow = document.createElement("tr");
+    newRow.innerHTML = `
+        <td><input type="text" lang="ko"></td>
+        <td><input type="number" step="1" min="0"></td>
+        <td><input type="number" step="0.01" min="0"></td>
+    `;
+    tableBody.appendChild(newRow);
+}
+
+function calculate() {
+    const rows = document.querySelectorAll("#gradeTable tbody tr");
+    let totalWeighted = 0;
+    let totalHours = 0;
+
+    rows.forEach(row => {
+        const inputs = row.querySelectorAll("input");
+        const subject = inputs[0].value.trim();
+        const hours = Number(inputs[1].value.trim());
+        const grade = Number(inputs[2].value.trim());
+
+        if (!subject || isNaN(hours) || isNaN(grade) || hours <= 0) {
+            return;
+        }
+
+        totalWeighted += hours * grade;
+        totalHours += hours;
+    });
+
+    const box = document.getElementById("resultBox");
+    const label = box.querySelector(".result-label");
+    const valueSpan = box.querySelector(".result-value");
+
+    if (totalHours === 0) {
+        label.textContent = "유효한 입력이 없습니다";
+        valueSpan.textContent = "---";
+        box.style.display = "flex";
+        box.style.animation = "popIn 0.4s ease-out";
+        return;
+    }
+
+    const avg = (totalWeighted / totalHours).toFixed(3);
+    label.textContent = "최종 평균 등급";
+    valueSpan.textContent = avg;
+
+    box.style.display = "flex";
+    box.style.animation = "none";
+    void box.offsetWidth;
+    box.style.animation = "popIn 0.4s ease-out";
+}
+</script>
+
+</body>
+</html>
