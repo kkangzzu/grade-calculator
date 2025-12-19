@@ -3,6 +3,7 @@
 <head>
 <meta name="google-site-verification" content="Yqz-Hz2MV3PEPtxDsgqAT1BGSBaaEylU_A8fqhyvqfI" />
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>👾평균 내신등급 계산기👾</title>
 
 <meta property="og:title" content="👾평균 내신등급 계산기👾">
@@ -286,24 +287,53 @@ button:active {
     }
 }
 
-@media (max-width: 840px) {
-    .main-card {
-        padding: 18px 14px 24px 14px;
+@media (max-width: 720px) {
+    body {
+        padding: 24px 12px;
     }
-    table {
+
+    h1 {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .main-card {
+        padding: 18px 14px 22px 14px;
+        border-radius: 14px;
+    }
+
+    th, td {
+        padding: 8px 4px;
         font-size: 12px;
     }
-    th, td {
-        padding: 10px 4px;
+
+    input {
+        font-size: 12px;
+        width: 100%;
     }
+
+    .button-row {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    button {
+        min-width: 120px;
+        font-size: 12px;
+        padding: 8px 14px;
+    }
+
     #resultBox {
         width: 280px;
-        padding: 18px 14px;
+        min-height: 100px;
+        padding: 18px 12px;
     }
+
     .result-value {
         font-size: 24px;
     }
 }
+
 </style>
 </head>
 <body>
@@ -397,6 +427,7 @@ function calculate() {
 
 </body>
 </html>
+
 
 
 
